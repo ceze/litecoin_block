@@ -202,7 +202,7 @@ Value getblockbyheight(const Array& params, bool fHelp){
 
     
     CBlock block;
-    ReadBlockFromDisk(block, pblockindex);
+    block.ReadFromDisk(pblockindex);
 
     bool fVerbose = true; //解码Block
         if (params.size() > 1)
@@ -264,7 +264,8 @@ Value getblock(const Array& params, bool fHelp)
 
     CBlock block;
     CBlockIndex* pblockindex = mapBlockIndex[hash];
-    ReadBlockFromDisk(block, pblockindex);
+    block.ReadFromDisk(pblockindex);
+
 
     if (!fVerbose)
     {
