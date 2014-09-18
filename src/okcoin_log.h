@@ -68,7 +68,7 @@ int OKCoinLogPrintStr(const std::string &str);
 TINYFORMAT_FOREACH_ARGNUM(MAKE_OKCOIN_LOG_FUNC)
 static inline int OKCoinLogPrint(const char* format)
 {
-    return LogPrintStr(format);
+    //return LogPrintStr(format);
 }
 
 #endif
