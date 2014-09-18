@@ -56,7 +56,7 @@ static bool fInited = false;
 
 bool OKCoin_Log_init(){
 	if(fInited == true){
-		LogPrint("okcoin_log", "okcoin_log allready inited\n");
+		//LogPrint("okcoin_log", "okcoin_log allready inited\n");
 		return false;
 	}
 #if LOG2DB
@@ -67,7 +67,7 @@ bool OKCoin_Log_init(){
 	db_password = GetArg("-okdbpassword", DB_PASSWORD);
 	db_name= GetArg("-okdbname", DB_NAME);
 	
-	LogPrint("okcoin_log", "OKCoin_Log_init loadconfig ok_db_host = %s\n", db_server);
+	//LogPrint("okcoin_log", "OKCoin_Log_init loadconfig ok_db_host = %s\n", db_server);
 /*
   	Driver *driver = get_driver_instance();
   	mysqlConn = driver->connect(db_server,db_user, db_password);
@@ -154,7 +154,8 @@ extern  "C"{
 #endif
 
 	fInited = false;
-	LogPrint("okcoin_log", "OKCoin_Log_deInit\n");
+	//LogPrint("okcoin_log", "OKCoin_Log_deInit\n");
+	printf("OKCoin_Log_deInit\n");
 	return true;
 }
 
@@ -167,7 +168,7 @@ extern  "C"{
 */
 int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, std::string fromip){
 	assert(fInited == true);
-	int ret;
+	int ret = 0;
 #if LOG2DB
 	/*
 	if(pstmtEvent == NULL){
@@ -187,14 +188,16 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 		ret = pstmtEvent->executeUpdate();
 		pstmtEvent->close();
 	}catch(sql::SQLException &e){
-		LogPrint("okcoin_log", "okcoin_log Insert LTC Event type=%d err %s \n", type, e.what());
+		//LogPrint("okcoin_log", "okcoin_log Insert LTC Event type=%d err %s \n", type, e.what());
+		printf("okcoin_log Insert LTC Event type=%d err %s \n", type, e.what());
 	}
 	pConnPool->ReleaseConnection(pConn);
 
 #else
-	ret = OKCoinLogPrint("action:%d, type:%d block:%s ip:%s rt:%lu\n", action, type, hash.data(), fromip.data(), GetTime());
+	//ret = OKCoinLogPrint("action:%d, type:%d block:%s ip:%s rt:%lu\n", action, type, hash.data(), fromip.data(), GetTime());
 #endif
-	LogPrint("okcoin_log", "okcoin_log Insert Event type=%d result= %s \n", type, ret);
+	//LogPrint("okcoin_log", "okcoin_log Insert Event type=%d result= %s \n", type, ret);
+	printf("%s\n", "okcoin_log Insert Event type=%d result= %s \n", type, ret);
 	return ret;
 }
 
