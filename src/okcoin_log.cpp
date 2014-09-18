@@ -177,6 +177,7 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 	*/
 	sql::Connection *pConn = pConnPool->GetConnection();
 	assert(pConn != NULL);
+	//call : InsertLtcEvent
 	std::auto_ptr<PreparedStatement> pstmtEvent(pConn->prepareStatement("CALL InsertLtcEvent(?,?,?,?,?,?)"));
 	try{
 		pstmtEvent->setInt(1, type);

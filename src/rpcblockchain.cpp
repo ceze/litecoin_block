@@ -181,10 +181,26 @@ Value getblockbyheight(const Array& params, bool fHelp){
     }
 
     int nHeight = params[0].get_int();
-    if (nHeight < 0 || nHeight > chainActive.Height())
+
+    CBlockIndex* pblockindex = NULL;
+    for (map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.begin(); mi != mapBlockIndex.end(); ++mi)
+    {
+         pblockindex = (*mi).second;
+         if (pblockindex->nHeight == nHeight)
+         {
+             break;
+         }
+         else
+         {
+             pblockindex = NULL;
+         }
+    }
+
+
+    if(pblockindex == NULL)
         throw runtime_error("Block number out of range.");
 
-    CBlockIndex* pblockindex = chainActive[nHeight];
+    
     CBlock block;
     ReadBlockFromDisk(block, pblockindex);
 
@@ -324,7 +340,7 @@ Value gettxout(const Array& params, bool fHelp)
         ret.push_back(Pair("confirmations", pcoinsTip->GetBestBlock()->nHeight - coins.nHeight + 1));
     ret.push_back(Pair("value", ValueFromAmount(coins.vout[n].nValue)));
     Object o;
-    ScriptPubKeyToJSON(coins.vout[n].scriptPubKey, o);
+    ScriptPubKeyToJSON(coins.vout[n].scriptPubKey, o, true); //chenzs okcoin
     ret.push_back(Pair("scriptPubKey", o));
     ret.push_back(Pair("version", coins.nVersion));
     ret.push_back(Pair("coinbase", coins.fCoinBase));
