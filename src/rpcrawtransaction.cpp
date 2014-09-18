@@ -79,7 +79,7 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeH
 //chenzs okcoin
 void TxoutToJSON(const CTxOut& txout, Object& out, unsigned int i, bool fInfo){
     //out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-    out.push_back(Pair("value", txout.nValue));
+    out.push_back(Pair("value", (boost::int64_t)txout.nValue));
     out.push_back(Pair("n", (boost::int64_t)i));
     Object o;
     ScriptPubKeyToJSON(txout.scriptPubKey, o, fInfo);
