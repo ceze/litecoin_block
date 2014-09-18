@@ -386,7 +386,7 @@ Value decoderawtransaction(const Array& params, bool fHelp)
     }
 
     Object result;
-    TxToJSON(tx, 0, result);
+    TxToJSON(tx, 0, result, true);
 
     return result;
 }

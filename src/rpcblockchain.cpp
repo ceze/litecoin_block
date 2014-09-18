@@ -181,6 +181,12 @@ Value getblockbyheight(const Array& params, bool fHelp){
     }
 
     int nHeight = params[0].get_int();
+    bool fVerbose = true; //解码Block
+    if (params.size() > 1)
+        fVerbose = params[1].get_bool();
+    bool fDecode = false; //解码Transaction
+    if(params.size() > 2)
+        fDecode = params[2].get_bool();
 
     CBlockIndex* pblockindex = NULL;
     for (map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.begin(); mi != mapBlockIndex.end(); ++mi)
@@ -203,13 +209,6 @@ Value getblockbyheight(const Array& params, bool fHelp){
     
     CBlock block;
     block.ReadFromDisk(pblockindex);
-
-    bool fVerbose = true; //解码Block
-        if (params.size() > 1)
-            fVerbose = params[1].get_bool();
-    bool fDecode = false; //解码Transaction
-    if(params.size() > 2)
-        fDecode = params[2].get_bool();
 
     return blockToJSON(block, pblockindex, fDecode);
 
