@@ -84,9 +84,8 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fDec
 
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    CBlockIndex *pnext = chainActive.Next(blockindex);
-    if (pnext)
-        result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
+    if (blockindex->pnext)
+        result.push_back(Pair("nextblockhash", blockindex->pnext->GetBlockHash().GetHex()));
     return result;
 }
 
@@ -178,8 +177,6 @@ Value getblockbyheight(const Array& params, bool fHelp){
         throw runtime_error(
             "getblockbyheight \"height\" ( verbose ) ( decode )\n"
             "\nref to getblock()\n"
-            + HelpExampleCli("getblockbyheight", "1000")
-            + HelpExampleRpc("getblockbyheight", "1000")
         );
     }
 
@@ -235,9 +232,6 @@ Value getblock(const Array& params, bool fHelp)
             "}\n"       
             "\nResult (for verbose=false):\n"
             "\"data\"             (string) A string that is serialized, hex-encoded data for block 'hash'.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getblock", "\"00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09\"")
-            + HelpExampleRpc("getblock", "\"00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09\"")
         );
    
 
