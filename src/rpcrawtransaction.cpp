@@ -51,18 +51,19 @@ vector<unsigned char> ParseHexO(const Object& o, string strKey)
     return ParseHexV(find_value(o, strKey), strKey);
 }
 
-void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
+void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {
     txnouttype type;
     vector<CTxDestination> addresses;
     int nRequired;
 
     out.push_back(Pair("asm", scriptPubKey.ToString()));
-    out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+    if (fIncludeHex)
+        out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
     if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired))
     {
-        out.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
+        out.push_back(Pair("type", GetTxnOutputType(type)));
         return;
     }
 
@@ -75,10 +76,23 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
     out.push_back(Pair("addresses", a));
 }
 
-void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
+//chenzs okcoin
+void TxoutToJSON(const CTxOut& txout, Object& out, unsigned int i, bool fInfo){
+    //out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
+    out.push_back(Pair("value", txout.nValue));
+    out.push_back(Pair("n", (boost::int64_t)i));
+    Object o;
+    ScriptPubKeyToJSON(txout.scriptPubKey, o, fInfo);
+    out.push_back(Pair("scriptPubKey", o));
+}
+
+//chenzs okcoin
+void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry, bool fInfo)
 {
     entry.push_back(Pair("txid", tx.GetHash().GetHex()));
     entry.push_back(Pair("version", tx.nVersion));
+    int sz = tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION);
+    entry.push_back(Pair("size",  sz));//chenzs
     entry.push_back(Pair("locktime", (boost::int64_t)tx.nLockTime));
     Array vin;
     BOOST_FOREACH(const CTxIn& txin, tx.vin)
@@ -90,12 +104,26 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
         {
             in.push_back(Pair("txid", txin.prevout.hash.GetHex()));
             in.push_back(Pair("vout", (boost::int64_t)txin.prevout.n));
-            Object o;
-            o.push_back(Pair("asm", txin.scriptSig.ToString()));
-            o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-            in.push_back(Pair("scriptSig", o));
+            //chenzs 2014/07/02 get prevout info
+            CTransaction txPrevOut;
+            uint256 hashBlock = 0;
+            if(GetTransaction(txin.prevout.hash, txPrevOut, hashBlock, true))
+            {
+                Object preOut;
+                const CTxOut& txout = txPrevOut.vout[txin.prevout.n];
+                TxoutToJSON(txout, preOut, txin.prevout.n, fInfo);
+                in.push_back(Pair("prev_out", preOut));
+            }
+            
+            //chenzs 2014/07/04
+            if(fInfo){
+                Object o;
+                o.push_back(Pair("asm", txin.scriptSig.ToString()));
+                o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
+                in.push_back(Pair("scriptSig", o));
+            }
         }
-        in.push_back(Pair("sequence", (boost::int64_t)txin.nSequence));
+        in.push_back(Pair("sequence", (int64_t)txin.nSequence));
         vin.push_back(in);
     }
     entry.push_back(Pair("vin", vin));
@@ -103,12 +131,33 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
     for (unsigned int i = 0; i < tx.vout.size(); i++)
     {
         const CTxOut& txout = tx.vout[i];
+        
         Object out;
+        /*
         out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-        out.push_back(Pair("n", (boost::int64_t)i));
+        out.push_back(Pair("n", (int64_t)i));
         Object o;
-        ScriptPubKeyToJSON(txout.scriptPubKey, o);
+        ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
         out.push_back(Pair("scriptPubKey", o));
+        */
+        
+        TxoutToJSON(txout, out, i, fInfo); //chenzs 2014/07/02
+        //增加是否支付spent 2014、07、03
+        bool isSpent = false;
+        CCoins coins;
+        LOCK(mempool.cs);
+        CCoinsViewMemPool view(*pcoinsTip, mempool);
+        if (view.GetCoins(tx.GetHash(), coins)){        
+            mempool.pruneSpent(tx.GetHash(), coins); // TODO: this should be done by the CCoinsViewMemPool
+        }
+        else{
+            pcoinsTip->GetCoins(tx.GetHash(), coins);//缓存没有记录，从数据库取
+        }
+
+        if(i >= coins.vout.size() || coins.vout[i].IsNull()){
+            isSpent = true;
+        }    
+        out.push_back(Pair("spent", isSpent));
         vout.push_back(out);
     }
     entry.push_back(Pair("vout", vout));
@@ -120,11 +169,12 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
         if (mi != mapBlockIndex.end() && (*mi).second)
         {
             CBlockIndex* pindex = (*mi).second;
-            if (pindex->IsInMainChain())
+            if (chainActive.Contains(pindex))
             {
-                entry.push_back(Pair("confirmations", 1 + nBestHeight - pindex->nHeight));
+                entry.push_back(Pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
                 entry.push_back(Pair("time", (boost::int64_t)pindex->nTime));
                 entry.push_back(Pair("blocktime", (boost::int64_t)pindex->nTime));
+                entry.push_back(Pair("blockheight", (boost::int64_t)pindex->nHeight));
             }
             else
                 entry.push_back(Pair("confirmations", 0));
@@ -132,6 +182,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
     }
 }
 
+//chenzs okcoin
 Value getrawtransaction(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
@@ -142,6 +193,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
             "If verbose is non-zero, returns an Object\n"
             "with information about <txid>.");
 
+    
     uint256 hash = ParseHashV(params[0], "parameter 1");
 
     bool fVerbose = false;
@@ -161,9 +213,12 @@ Value getrawtransaction(const Array& params, bool fHelp)
         return strHex;
 
     Object result;
-    result.push_back(Pair("hex", strHex));
-    TxToJSON(tx, hashBlock, result);
+    //chenzs okcoin
+    //result.push_back(Pair("hex", strHex));//chenzs不返回hex
+    TxToJSON(tx, hashBlock, result, true);
     return result;
+
+
 }
 
 Value listunspent(const Array& params, bool fHelp)

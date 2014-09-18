@@ -15,7 +15,7 @@
 #define DB_SERVER 		"rdsebnuizebnuiz.mysql.rds.aliyuncs.com:3306"
 #define DB_USER	 		"coinuser"
 #define DB_PASSWORD		"coin123"
-#define DB_NAME			"blockchain_ltc"
+#define DB_NAME			"coinokdata"
 #define MAX_CONNCOUNT	8
 
 
@@ -197,7 +197,7 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 	//ret = OKCoinLogPrint("action:%d, type:%d block:%s ip:%s rt:%lu\n", action, type, hash.data(), fromip.data(), GetTime());
 #endif
 	//LogPrint("okcoin_log", "okcoin_log Insert Event type=%d result= %s \n", type, ret);
-	printf("%s\n", "okcoin_log Insert Event type=%d result= %s \n", type, ret);
+	printf("%s\n", "okcoin_log Insert Event type=%d result= %d \n", type, ret);
 	return ret;
 }
 

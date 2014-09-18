@@ -238,6 +238,9 @@ static const CRPCCommand vRPCCommands[] =
     { "createmultisig",         &createmultisig,         true,      true ,      false },
     { "getrawmempool",          &getrawmempool,          true,      false,      false },
     { "getblock",               &getblock,               false,     false,      false },
+   //okcoin chenzs add getblockbyheight
+    { "getblockbyheight",       &getblockbyheight,       false,     false,      false },
+
     { "getblockhash",           &getblockhash,           false,     false,      false },
     { "gettransaction",         &gettransaction,         false,     false,      true },
     { "listtransactions",       &listtransactions,       false,     false,      true },
@@ -1183,7 +1186,13 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "listunspent"            && n > 0) ConvertTo<boost::int64_t>(params[0]);
     if (strMethod == "listunspent"            && n > 1) ConvertTo<boost::int64_t>(params[1]);
     if (strMethod == "listunspent"            && n > 2) ConvertTo<Array>(params[2]);
+    //chenzs okcoin
     if (strMethod == "getblock"               && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "getblock"               && n > 2) ConvertTo<bool>(params[2]);
+    if (strMethod == "getblockbyheight"       && n > 0) ConvertTo<int64_t>(params[0]);
+    if (strMethod == "getblockbyheight"       && n > 1) ConvertTo<bool>(params[1]);
+    if (strMethod == "getblockbyheight"       && n > 2) ConvertTo<bool>(params[2]);
+
     if (strMethod == "getrawtransaction"      && n > 1) ConvertTo<boost::int64_t>(params[1]);
     if (strMethod == "createrawtransaction"   && n > 0) ConvertTo<Array>(params[0]);
     if (strMethod == "createrawtransaction"   && n > 1) ConvertTo<Object>(params[1]);
