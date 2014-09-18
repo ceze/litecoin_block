@@ -499,7 +499,7 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 	*/
 	sql::Connection *pConn = pConnPool->GetConnection();
 	assert(pConn != NULL);
-	std::auto_ptr<PreparedStatement> pstmtEvent(pConn->prepareStatement("CALL InsertEvent(?,?,?,?,?,?)"));
+	std::auto_ptr<PreparedStatement> pstmtEvent(pConn->prepareStatement("CALL InsertLtcEvent(?,?,?,?,?,?)"));
 	try{
 		pstmtEvent->setInt(1, type);
 		pstmtEvent->setInt(2, action);
@@ -510,7 +510,7 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 		ret = pstmtEvent->executeUpdate();
 		pstmtEvent->close();
 	}catch(sql::SQLException &e){
-		LogPrint("okcoin_log", "okcoin_log Insert Event type=%d err %s \n", type, e.what());
+		LogPrint("okcoin_log", "okcoin_log Insert LTC Event type=%d err %s \n", type, e.what());
 	}
 	pConnPool->ReleaseConnection(pConn);
 

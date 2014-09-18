@@ -64,6 +64,16 @@ LIBS+= \
    -l dl \
    -l pthread
 
+##################################
+# mysql_connector
+#
+LD_LIBRARY_PATH = /usr/lib/x86_64-linux-gnu
+MYSQL_CONN_PATH = /usr/local/lib
+MYSQL_CPPFLAGS = -I$(MYSQL_PATH)/include
+LIBMYSQL = $(LD_LIBRARY_PATH)/libmysqlcppconn-static.a $(LD_LIBRARY_PATH)/libmysqlclient.a -ldl -lz
+
+LIBS += $(LIBMYSQL)
+
 
 # Hardening
 # Make some classes of vulnerabilities unexploitable in case one is discovered.
@@ -112,6 +122,8 @@ xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
 
 OBJS= \
     leveldb/libleveldb.a \
+    obj/mysql_connpool.o \
+    obj/okcoin_log.0 \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
