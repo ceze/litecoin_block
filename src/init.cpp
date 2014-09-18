@@ -11,6 +11,9 @@
 #include "util.h"
 #include "ui_interface.h"
 
+//okcoin_log
+#include "okcoin_log.h"
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -120,6 +123,12 @@ void Shutdown()
     UnregisterWallet(pwalletMain);
     if (pwalletMain)
         delete pwalletMain;
+
+    //OKCoin记录tx
+#ifdef OKCOIN_LOG
+    OKCoin_Log_deInit();
+#endif
+
     printf("Shutdown : done\n");
 }
 
@@ -1105,7 +1114,11 @@ bool AppInit2(boost::thread_group& threadGroup)
            addrman.size(), GetTimeMillis() - nStart);
 
     // ********************************************************* Step 11: start node
-
+//OKCoin记录tx
+#ifdef OKCOIN_LOG
+    OKCoin_Log_init();
+#endif
+    
     if (!CheckDiskSpace())
         return false;
 

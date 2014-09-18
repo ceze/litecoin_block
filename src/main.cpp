@@ -11,6 +11,10 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "checkqueue.h"
+
+//okcoin_log
+#include "okcoin_log.h"
+
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -2347,6 +2351,10 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
         }
         mapOrphanBlocksByPrev.erase(hashPrev);
     }
+    
+#ifdef OKCOIN_LOG
+    OKCoin_Log_Event(OC_TYPE_BLOCK, OC_ACTION_NEW, pblock->GetHash().ToString(),pfrom->addr.ToStringIP());
+#endif
 
     printf("ProcessBlock: ACCEPTED\n");
     return true;
@@ -3586,6 +3594,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str(),
                 tx.GetHash().ToString().c_str(),
                 mempool.mapTx.size());
+
+#ifdef OKCOIN_LOG
+            OKCoin_Log_Event(OC_TYPE_TX, OC_ACTION_NEW, tx.GetHash().ToString(), pfrom->addr.ToStringIP());
+#endif  
 
             // Recursively process any orphan transactions that depended on this one
             for (unsigned int i = 0; i < vWorkQueue.size(); i++)
