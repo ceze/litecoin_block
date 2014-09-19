@@ -67,7 +67,9 @@ LIBS+= \
 ##################################
 # mysql_connector
 #
-LD_LIBRARY_PATH = /usr/lib/x86_64-linux-gnu
+#LD_LIBRARY_PATH = /usr/lib/x86_64-linux-gnu # ubuntu
+#centOS
+LD_LIBRARY_PATH = /usr/lib64/mysql
 MYSQL_CONN_PATH = /usr/local/lib
 MYSQL_CPPFLAGS = -I$(MYSQL_PATH)/include
 LIBMYSQL = $(LD_LIBRARY_PATH)/libmysqlcppconn-static.a $(LD_LIBRARY_PATH)/libmysqlclient.a -ldl -lz
