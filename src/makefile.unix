@@ -72,7 +72,7 @@ LIBS+= \
 LD_LIBRARY_PATH = /usr/lib64/mysql
 MYSQL_CONN_PATH = /usr/local/lib
 MYSQL_CPPFLAGS = -I$(MYSQL_PATH)/include
-LIBMYSQL = $(MYSQL_CONN_PATH)/libmysqlcppconn-static.a $(LD_LIBRARY_PATH)/libmysqlclient.a
+LIBMYSQL = $(MYSQL_CONN_PATH)/libmysqlcppconn-static.a $(LD_LIBRARY_PATH)/libmysqlclient.so
 
 LIBS += $(LIBMYSQL)
 
