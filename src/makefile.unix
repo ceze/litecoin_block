@@ -32,6 +32,7 @@ else
 endif
 
 # for boost 1.37, add -mt to the boost libraries
+BOOST_LIB_SUFFIX = -mt
 LIBS += \
  -Wl,-B$(LMODE) \
    -l boost_system$(BOOST_LIB_SUFFIX) \
