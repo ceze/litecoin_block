@@ -15,6 +15,10 @@ LINK:=$(CXX)
 
 DEFS=-DBOOST_SPIRIT_THREADSAFE -D_FILE_OFFSET_BITS=64
 
+# For CENTOS
+OPENSSL_INCLUDE_PATH = /usr/local/ssl/include
+OPENSSL_LIB_PATH = /usr/local/ssl/lib
+
 DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
 
@@ -32,7 +36,7 @@ else
 endif
 
 # for boost 1.37, add -mt to the boost libraries
-BOOST_LIB_SUFFIX = -mt
+BOOST_LIB_SUFFIX = -mt #centos boost-1.37
 LIBS += \
  -Wl,-B$(LMODE) \
    -l boost_system$(BOOST_LIB_SUFFIX) \
