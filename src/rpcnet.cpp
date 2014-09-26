@@ -42,6 +42,8 @@ Value getpeerinfo(const Array& params, bool fHelp)
     vector<CNodeStats> vstats;
     CopyNodeStats(vstats);
 
+
+    Object result;//okcoin chenzs
     Array ret;
 
     BOOST_FOREACH(const CNodeStats& stats, vstats) {
@@ -69,6 +71,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
         ret.push_back(obj);
     }
 
+    result.push_back(Pair("infos", ret));//okcoin chenzs
     return ret;
 }
 
