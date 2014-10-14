@@ -72,7 +72,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
     }
 
     result.push_back(Pair("infos", ret));//okcoin chenzs
-    return ret;
+    return result;
 }
 
 Value addnode(const Array& params, bool fHelp)
