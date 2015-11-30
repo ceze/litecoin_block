@@ -202,6 +202,13 @@ int OKCoin_Log_Event(unsigned int type, unsigned int action,std::string hash, st
 	return ret;
 }
 
+bool OKCoin_Log_EarseOrphaneBlk(std::string blkHash){
+    OKCoin_Log_Event(OC_TYPE_BLOCK, OC_ACTION_ORPHANE,  blkHash, "127.0.0.1");
+}
+
+bool OKCoin_Log_EarseOrphaneTx(std::string txHash){
+    OKCoin_Log_Event(OC_TYPE_TX, OC_ACTION_ORPHANE,  txHash, "127.0.0.1");
+}
 
 
 #if !LOG2DB

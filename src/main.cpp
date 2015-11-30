@@ -1584,6 +1584,9 @@ bool CBlock::DisconnectBlock(CValidationState &state, CBlockIndex *pindex, CCoin
 
     if (pfClean) {
         *pfClean = fClean;
+#ifdef OKCOIN_LOG
+         OKCoin_Log_EarseOrphaneBlk(pindex->GetBlockHash().ToString());
+#endif
         return true;
     } else {
         return fClean;
@@ -3624,6 +3627,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         mapAlreadyAskedFor.erase(CInv(MSG_TX, orphanHash));
                         vWorkQueue.push_back(orphanHash);
                         vEraseQueue.push_back(orphanHash);
+#ifdef OKCOIN_LOG
+                         OKCoin_Log_Event(OC_TYPE_TX, OC_ACTION_NEW,orphanHash.ToString(), pfrom->addr.ToStringIP());
+#endif
                     }
                     else if (!fMissingInputs2)
                     {

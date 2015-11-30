@@ -81,8 +81,8 @@ enum OKCoin_EventType{
 
 enum OKCoin_Action {
     OC_ACTION_NEW = 0,
-    OC_ACTION_UPDATE = 1,
-    OC_ACTION_REMOVE = 2
+    OC_ACTION_CONFIRM = 1,
+    OC_ACTION_ORPHANE = -1
  } ;
 
 
@@ -96,6 +96,8 @@ bool OKCoin_Log_deInit();
 */
 int OKCoin_Log_Event(unsigned int type, unsigned int action , std::string hash, std::string fromip);
 
-
+//剔除孤立数据
+bool OKCoin_Log_EarseOrphaneBlk(std::string blkHash);
+bool OKCoin_Log_EarseOrphaneTx(std::string txHash);
 
 #endif
