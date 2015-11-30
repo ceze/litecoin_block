@@ -120,6 +120,10 @@ void static EraseFromWallets(uint256 hash)
 {
     BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
         pwallet->EraseFromWallet(hash);
+
+#ifdef OKCOIN_LOG
+      OKCoin_Log_EarseOrphaneTx(hash.ToString());
+#endif
 }
 
 // make sure all wallets know about the given transaction, in the given block
