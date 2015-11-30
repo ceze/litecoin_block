@@ -32,3 +32,7 @@ qrc_*.cpp
 build
 
 !src/leveldb*/Makefile
+litecoin_block.creator
+litecoin_block.config
+litecoin_block.files
+litecoin_block.includes
